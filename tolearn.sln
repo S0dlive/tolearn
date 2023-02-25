@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{51AD9F73-3E96-4F23-8188-90B36FB2FF30}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{9BAF76F6-6CE5-4712-8BE6-CF9864F51E4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToLearn.Services.AuthService", "src\Services\ToLearn.Services.AuthService\ToLearn.Services.AuthService.csproj", "{29BAA8AC-11C6-44FA-9F97-91EF6067535B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9BAF76F6-6CE5-4712-8BE6-CF9864F51E4D} = {51AD9F73-3E96-4F23-8188-90B36FB2FF30}
+		{29BAA8AC-11C6-44FA-9F97-91EF6067535B} = {9BAF76F6-6CE5-4712-8BE6-CF9864F51E4D}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{29BAA8AC-11C6-44FA-9F97-91EF6067535B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29BAA8AC-11C6-44FA-9F97-91EF6067535B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29BAA8AC-11C6-44FA-9F97-91EF6067535B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29BAA8AC-11C6-44FA-9F97-91EF6067535B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
