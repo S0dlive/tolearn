@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using ToLearn.Services.AuthService.Data;
 using ToLearn.Services.AuthService.Models;
+using ToLearn.Services.AuthService.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     string connection = "server=localhost;user=root;password=;database=tolearndb;";
     options.UseMySql(connection, ServerVersion.AutoDetect(connection));
 });
-
+builder.Services.AddSingleton<UserProfileService>();
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders()
     .AddEntityFrameworkStores<ApplicationDbContext>();

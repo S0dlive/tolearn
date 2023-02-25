@@ -11,14 +11,14 @@ namespace ToLearn.Services.AuthService.Controllers;
 
 
 [ApiController]
-[Route("api/[controller]")]
-public class AccountController : Controller
+[Route("api/v1/auth")]
+public class AuthController : Controller
 {
     private readonly IConfiguration _configuration;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
 
-    public AccountController(
+    public AuthController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         IConfiguration configuration)
