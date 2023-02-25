@@ -4,6 +4,7 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using ToLearn.Services.AuthService.Data;
 using ToLearn.Services.AuthService.Models;
 
 namespace ToLearn.Services.AuthService.Controllers;
@@ -11,15 +12,15 @@ namespace ToLearn.Services.AuthService.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AccountController : ControllerBase
+public class AccountController : Controller
 {
     private readonly IConfiguration _configuration;
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
     public AccountController(
-        UserManager<IdentityUser> userManager,
-        SignInManager<IdentityUser> signInManager,
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
         IConfiguration configuration)
     {
         _userManager = userManager;
@@ -28,12 +29,13 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterModel model)
+    public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
         var user = new ApplicationUser { FirstName = model.FirstName,
             Email = model.Email,
             Id = Guid.NewGuid().ToString(),
-            LastName = model.LastName};
+            LastName = model.LastName,
+            UserName = model.Username};
         var result = await _userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
