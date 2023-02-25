@@ -4,23 +4,23 @@ using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using ToLearn.Services.AuthService.Data;
 using ToLearn.Services.AuthService.Models;
 
 namespace ToLearn.Services.AuthService.Controllers;
 
-public class AuthController : Controller
-{
-    [ApiController]
+
+[ApiController]
 [Route("api/[controller]")]
-public class AccountController : ControllerBase
+public class AccountController : Controller
 {
     private readonly IConfiguration _configuration;
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
 
     public AccountController(
-        UserManager<IdentityUser> userManager,
-        SignInManager<IdentityUser> signInManager,
+        UserManager<ApplicationUser> userManager,
+        SignInManager<ApplicationUser> signInManager,
         IConfiguration configuration)
     {
         _userManager = userManager;
@@ -29,12 +29,13 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(RegisterModel model)
+    public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
         var user = new ApplicationUser { FirstName = model.FirstName,
             Email = model.Email,
             Id = Guid.NewGuid().ToString(),
-            LastName = model.LastName};
+            LastName = model.LastName,
+            UserName = model.Username};
         var result = await _userManager.CreateAsync(user, model.Password);
 
         if (result.Succeeded)
@@ -46,43 +47,42 @@ public class AccountController : ControllerBase
         return BadRequest(result.Errors);
     }
 
-  [HttpPost("login")]
-public async Task<IActionResult> Login([FromBody] LoginDto model)
-{
-    var user = await _userManager.FindByEmailAsync(model.Email);
-
-    if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.NameIdentifier, user.Id)
-        };
+        var user = await _userManager.FindByEmailAsync(model.Email);
 
-        var roles = await _userManager.GetRolesAsync(user);
-        foreach (var role in roles)
+        if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
         {
-            claims.Add(new Claim(ClaimTypes.Role, role));
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id)
+            };
+
+            var roles = await _userManager.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(60),
+                signingCredentials: new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+                    SecurityAlgorithms.HmacSha256));
+
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                expiration = token.ValidTo
+            });
         }
 
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(60),
-            signingCredentials: new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
-                SecurityAlgorithms.HmacSha256));
-
-        return Ok(new
-        {
-            token = new JwtSecurityTokenHandler().WriteToken(token),
-            expiration = token.ValidTo
-        });
+        return Unauthorized();
     }
-
-    return Unauthorized();
-}
-}
 }
