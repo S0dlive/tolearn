@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ToLearn.Services.AuthService.Models;
@@ -32,5 +35,20 @@ public class UserController : Controller
             return Ok(_userProfileService.ApplicationUserToProfileUser(user));
         }
         return NotFound();
+    }
+
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<IActionResult> GetSelfUserProfile()
+    {
+        throw new NotImplementedException();
+    }
+
+    [HttpPost("{id}/subscribe")]
+    [Authorize]
+    public async Task<IActionResult> SubsribeUserWithId(string id)
+    {
+
+        return Ok(User.Claims);
     }
 }
